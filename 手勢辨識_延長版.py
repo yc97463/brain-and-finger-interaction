@@ -10,6 +10,10 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
+# 全域設定變數
+MIN_NUMBER = 0  # 測驗數字最小值
+MAX_NUMBER = 7  # 測驗數字最大值
+
 # 全域字體快取
 _font_cache = {}
 
@@ -40,8 +44,10 @@ def put_chinese_text(img, text, position, font_size=30, color=(255, 255, 255), f
                 # 嘗試系統預設中文字體
                 font_paths = [
                     # macOS 系統字體
-                    "/System/Library/Fonts/STHeiti Medium.ttc",
-                    "/System/Library/Fonts/STHeiti Light.ttc",
+                    # "/System/Library/Fonts/STHeiti Medium.ttc",
+                    # "/System/Library/Fonts/STHeiti Light.ttc",
+                    "/Users/yc97463/Library/Fonts/jf-jinxuan-3.1-bold.otf",
+                    "/Users/yc97463/Library/Fonts/jf-jinxuan-3.1-medium.otf",
                     "/System/Library/Fonts/Helvetica.ttc",
                     # Windows 系統字體
                     "C:/Windows/Fonts/msyh.ttc",
@@ -278,7 +284,7 @@ def main():
                 img = cv2.flip(img, 1)
                 
                 if target_number is None:
-                    target_number = random.randint(0, 7)
+                    target_number = random.randint(MIN_NUMBER, MAX_NUMBER)
                     game_state = "WAITING"
                     state_start_time = time.time()
                     countdown_value = PREPARATION_DELAY
@@ -420,7 +426,7 @@ def main():
                         if show_gift:
                             correct_count = 0
                             show_gift = False
-                        target_number = random.randint(0, 7)
+                        target_number = random.randint(MIN_NUMBER, MAX_NUMBER)
                         game_state = "WAITING"
                         state_start_time = current_time
                         stable_frames = 0
@@ -435,7 +441,7 @@ def main():
                 # Reset game if 'r' is pressed
                 elif key == ord('r'):
                     correct_count = 0
-                    target_number = random.randint(0, 7)
+                    target_number = random.randint(MIN_NUMBER, MAX_NUMBER)
                     show_gift = False
                     answer_confirmed = False
                     wrong_answer_confirmed = False
