@@ -11,8 +11,8 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
 # 全域設定變數
-MIN_NUMBER = 0  # 測驗數字最小值
-MAX_NUMBER = 7  # 測驗數字最大值
+MIN_NUMBER = 0   # 測驗數字最小值
+MAX_NUMBER = 9  # 測驗數字最大值（考慮雙手相加，建議設定為10以內，例如5+5=10）
 
 # 全域字體快取
 _font_cache = {}
@@ -302,6 +302,7 @@ def main():
                     img = put_chinese_text(img, f"準備好了嗎？請比出這個數字：", (30, 30), 25, (255, 255, 255))
                     cv2.putText(img, f"{target_number}", (w//2-40, h//2), 
                                 fontFace, 6, (0, 255, 0), 8, lineType)  # 更大更粗的數字
+                    img = put_chinese_text(img, f"可以用單手或雙手相加喔！", (30, 350), 25, (255, 255, 0))
                     img = put_chinese_text(img, f"倒數計時: {countdown_value} 秒", (30, 400), 35, (0, 165, 255))
                     img = put_chinese_text(img, f"連續答對: {correct_count}/3", (30, 450), 30, (255, 255, 255))
                     
@@ -368,8 +369,15 @@ def main():
                             for i, num in enumerate(detected_numbers):
                                 img = put_chinese_text(img, f"偵測到: {str(num)}", (30 + i*150, 180), 40, (221, 255, 97))
                             
-                            # Get the first detected number (if any)
-                            current_number = detected_numbers[0] if detected_numbers else None
+                            # Calculate sum of all detected numbers (雙手相加功能)
+                            if len(detected_numbers) > 1:
+                                # 多隻手：將所有數字相加
+                                current_number = sum(detected_numbers)
+                                img = put_chinese_text(img, f"雙手相加: {' + '.join(map(str, detected_numbers))} = {current_number}", 
+                                                     (30, 220), 35, (255, 165, 0))
+                            else:
+                                # 單隻手：直接使用該數字
+                                current_number = detected_numbers[0] if detected_numbers else None
                             
                             # Check if the number is stable
                             if current_number == last_detected_number:
@@ -384,7 +392,8 @@ def main():
                                 game_state = "SHOWING_RESULT"
                                 state_start_time = current_time
                                 
-                                if target_number in detected_numbers:
+                                # 檢查答案：比較目標數字與當前數字（可能是單手或雙手相加的結果）
+                                if current_number == target_number:
                                     answer_confirmed = True
                                     wrong_answer_confirmed = False
                                     correct_count += 1
