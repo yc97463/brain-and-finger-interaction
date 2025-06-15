@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>特教學校遊戲統計 - 2025/06/12</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans TC', 'Microsoft JhengHei', Arial, sans-serif;
+            background:
+                linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 優雅的星空背景 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(2px 2px at 20px 30px, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255, 255, 255, 0.2), transparent),
+                radial-gradient(1px 1px at 90px 40px, rgba(255, 255, 255, 0.4), transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255, 255, 255, 0.3), transparent),
+                radial-gradient(2px 2px at 160px 30px, rgba(255, 255, 255, 0.2), transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: twinkle 4s ease-in-out infinite alternate;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(ellipse at top, rgba(79, 172, 254, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at bottom, rgba(0, 242, 254, 0.05) 0%, transparent 50%);
+            animation: aurora 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes twinkle {
+            0% {
+                opacity: 0.3;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+        @keyframes aurora {
+
+            0%,
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.1) translateY(-10px);
+                opacity: 0.9;
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: slideDown 1s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        /* 毛玻璃效果卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .glass-card:hover::before {
+            left: 100%;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow:
+                0 20px 40px rgba(0, 0, 0, 0.15),
+                inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            animation: slideUp 0.8s ease-out;
+            animation-fill-mode: both;
+        }
+
+        .stat-card:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .stat-card:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .stat-card:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .stat-card:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .stat-card h2 {
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 8px;
+        }
+
+        .highlight {
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin: 15px 0;
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 20px rgba(79, 172, 254, 0.3);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        .chart-container {
+            margin: 30px 0;
+            animation: slideUp 1s ease-out;
+            animation-fill-mode: both;
+            animation-delay: 0.5s;
+        }
+
+        .chart-container h2 {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-wrapper {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 15px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        /* 動畫效果 */
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .glass-card {
+                padding: 20px;
+            }
+
+            .highlight {
+                font-size: 2rem;
+            }
+        }
+
+        /* 載入動畫 */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 成功指示器 */
+        .success-indicator {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(45deg, #4CAF50, #8BC34A);
+            border-radius: 50%;
+            position: relative;
+            margin-left: 10px;
+        }
+
+        .success-indicator::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>特教學校遊戲統計</h1>
+            <p>2025年6月12日 手勢識別遊戲分析報告</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="glass-card stat-card">
+                <h2>📊 遊戲資訊</h2>
+                <p>🕐 開始時間：2025-06-12 18:56:35</p>
+                <p>🕕 結束時間：2025-06-12 19:17:29</p>
+                <p>🎮 遊戲版本：雙手相加版</p>
+                <p>⏱️ 總遊戲時長：21分鐘</p>
+            </div>
+            <div class="glass-card stat-card">
+                <h2>🎯 正確率</h2>
+                <div class="highlight" id="accuracy">
+                    <div class="loading"></div>
+                </div>
+            </div>
+            <div class="glass-card stat-card">
+                <h2>⚡ 平均反應時間</h2>
+                <div class="highlight" id="avgResponseTime">
+                    <div class="loading"></div>
+                </div>
+            </div>
+            <div class="glass-card stat-card">
+                <h2>🤲 雙手使用比例</h2>
+                <div class="highlight" id="dualHandRatio">
+                    <div class="loading"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chart-container glass-card">
+            <h2>📈 反應時間趨勢分析</h2>
+            <div class="chart-wrapper">
+                <canvas id="responseTimeChart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-container glass-card">
+            <h2>📊 目標數字分布統計</h2>
+            <div class="chart-wrapper">
+                <canvas id="numberDistributionChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 計算統計數據
+        function calculateStats(records) {
+            const total = records.length;
+            const correct = records.filter(r => r.is_correct).length;
+            const accuracy = (correct / total * 100).toFixed(1);
+
+            const avgResponseTime = (records.reduce((sum, r) => sum + r.response_time_seconds, 0) / total).toFixed(2);
+
+            const dualHandCount = records.filter(r => r.is_dual_hand).length;
+            const dualHandRatio = (dualHandCount / total * 100).toFixed(1);
+
+            // 動畫更新顯示
+            setTimeout(() => {
+                document.getElementById('accuracy').innerHTML = `${accuracy}%<span class="success-indicator"></span>`;
+            }, 500);
+
+            setTimeout(() => {
+                document.getElementById('avgResponseTime').innerHTML = `${avgResponseTime} 秒<span class="success-indicator"></span>`;
+            }, 700);
+
+            setTimeout(() => {
+                document.getElementById('dualHandRatio').innerHTML = `${dualHandRatio}%<span class="success-indicator"></span>`;
+            }, 900);
+
+            // 繪製反應時間趨勢圖
+            setTimeout(() => {
+                const responseTimeCtx = document.getElementById('responseTimeChart').getContext('2d');
+                new Chart(responseTimeCtx, {
+                    type: 'line',
+                    data: {
+                        labels: records.map((_, i) => `第${i + 1}題`),
+                        datasets: [{
+                            label: '反應時間 (秒)',
+                            data: records.map(r => r.response_time_seconds),
+                            borderColor: '#4facfe',
+                            backgroundColor: 'rgba(79, 172, 254, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#4facfe',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'rgba(255,255,255,0.9)',
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: 'rgba(255,255,255,0.8)'
+                                },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: 'rgba(255,255,255,0.8)'
+                                },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }, 1000);
+
+            // 繪製數字分布圖
+            setTimeout(() => {
+                const numberDistribution = {};
+                records.forEach(r => {
+                    const target = r.target_number;
+                    numberDistribution[target] = (numberDistribution[target] || 0) + 1;
+                });
+
+                const numberCtx = document.getElementById('numberDistributionChart').getContext('2d');
+                new Chart(numberCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(numberDistribution).map(n => `數字 ${n}`),
+                        datasets: [{
+                            label: '出現次數',
+                            data: Object.values(numberDistribution),
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.8)',
+                                'rgba(54, 162, 235, 0.8)',
+                                'rgba(255, 205, 86, 0.8)',
+                                'rgba(75, 192, 192, 0.8)',
+                                'rgba(153, 102, 255, 0.8)',
+                                'rgba(255, 159, 64, 0.8)',
+                                'rgba(199, 199, 199, 0.8)',
+                                'rgba(83, 102, 255, 0.8)',
+                                'rgba(255, 99, 255, 0.8)',
+                                'rgba(99, 255, 132, 0.8)'
+                            ],
+                            borderColor: 'rgba(255,255,255,0.8)',
+                            borderWidth: 2,
+                            borderRadius: 8,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: 'rgba(255,255,255,0.9)',
+                                    font: {
+                                        size: 14
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: 'rgba(255,255,255,0.8)'
+                                },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    color: 'rgba(255,255,255,0.8)'
+                                },
+                                grid: {
+                                    color: 'rgba(255,255,255,0.1)'
+                                }
+                            }
+                        }
+                    }
+                });
+            }, 1200);
+        }
+
+        // 載入數據並計算統計
+        fetch('hand_gesture_game_20250612_185635.json')
+            .then(response => response.json())
+            .then(data => {
+                calculateStats(data.game_records);
+            })
+            .catch(error => {
+                console.error('Error loading game data:', error);
+                // 如果載入失敗，顯示錯誤訊息
+                document.getElementById('accuracy').textContent = '載入失敗';
+                document.getElementById('avgResponseTime').textContent = '載入失敗';
+                document.getElementById('dualHandRatio').textContent = '載入失敗';
+            });
+    </script>
+</body>
+
+</html>
