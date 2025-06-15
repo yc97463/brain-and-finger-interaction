@@ -1,0 +1,498 @@
+{
+  "session_info": {
+    "start_time": "2025-06-12T18:56:35.138066",
+    "min_number": 0,
+    "max_number": 9,
+    "version": "雙手相加版",
+    "end_time": "2025-06-12T19:17:29.471816"
+  },
+  "game_records": [
+    {
+      "timestamp": "2025-06-12T18:57:18.420133",
+      "target_number": 6,
+      "detected_hands": [
+        6
+      ],
+      "final_answer": 6,
+      "is_correct": true,
+      "response_time_seconds": 30.32,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T18:58:32.559542",
+      "target_number": 2,
+      "detected_hands": [
+        1
+      ],
+      "final_answer": 1,
+      "is_correct": false,
+      "response_time_seconds": 56.14,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T18:58:58.781118",
+      "target_number": 2,
+      "detected_hands": [
+        2
+      ],
+      "final_answer": 2,
+      "is_correct": true,
+      "response_time_seconds": 8.19,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T18:59:19.634716",
+      "target_number": 6,
+      "detected_hands": [
+        6
+      ],
+      "final_answer": 6,
+      "is_correct": true,
+      "response_time_seconds": 2.84,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T18:59:43.409513",
+      "target_number": 5,
+      "detected_hands": [
+        5
+      ],
+      "final_answer": 5,
+      "is_correct": true,
+      "response_time_seconds": 5.77,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:00:05.226291",
+      "target_number": 2,
+      "detected_hands": [
+        2
+      ],
+      "final_answer": 2,
+      "is_correct": true,
+      "response_time_seconds": 3.8,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:00:27.466807",
+      "target_number": 7,
+      "detected_hands": [
+        8
+      ],
+      "final_answer": 8,
+      "is_correct": false,
+      "response_time_seconds": 4.24,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:00:47.346671",
+      "target_number": 8,
+      "detected_hands": [
+        3,
+        5
+      ],
+      "final_answer": 8,
+      "is_correct": true,
+      "response_time_seconds": 1.87,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:01:08.330766",
+      "target_number": 3,
+      "detected_hands": [
+        3
+      ],
+      "final_answer": 3,
+      "is_correct": true,
+      "response_time_seconds": 2.97,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:01:29.231715",
+      "target_number": 5,
+      "detected_hands": [
+        5
+      ],
+      "final_answer": 5,
+      "is_correct": true,
+      "response_time_seconds": 2.89,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:01:50.091932",
+      "target_number": 1,
+      "detected_hands": [
+        1
+      ],
+      "final_answer": 1,
+      "is_correct": true,
+      "response_time_seconds": 2.83,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:02:31.012584",
+      "target_number": 6,
+      "detected_hands": [
+        5,
+        5
+      ],
+      "final_answer": 10,
+      "is_correct": false,
+      "response_time_seconds": 22.91,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:03:05.471978",
+      "target_number": 0,
+      "detected_hands": [
+        0,
+        5
+      ],
+      "final_answer": 5,
+      "is_correct": false,
+      "response_time_seconds": 16.45,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:03:46.036820",
+      "target_number": 3,
+      "detected_hands": [
+        3
+      ],
+      "final_answer": 3,
+      "is_correct": true,
+      "response_time_seconds": 22.55,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:04:13.618384",
+      "target_number": 4,
+      "detected_hands": [
+        4
+      ],
+      "final_answer": 4,
+      "is_correct": true,
+      "response_time_seconds": 9.54,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:04:44.465784",
+      "target_number": 9,
+      "detected_hands": [
+        1,
+        5
+      ],
+      "final_answer": 6,
+      "is_correct": false,
+      "response_time_seconds": 12.84,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:05:07.820645",
+      "target_number": 3,
+      "detected_hands": [
+        3
+      ],
+      "final_answer": 3,
+      "is_correct": true,
+      "response_time_seconds": 5.34,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:05:34.603140",
+      "target_number": 7,
+      "detected_hands": [
+        5,
+        7
+      ],
+      "final_answer": 12,
+      "is_correct": false,
+      "response_time_seconds": 8.78,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:06:12.055912",
+      "target_number": 7,
+      "detected_hands": [
+        7
+      ],
+      "final_answer": 7,
+      "is_correct": true,
+      "response_time_seconds": 19.41,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:06:31.804019",
+      "target_number": 1,
+      "detected_hands": [
+        1,
+        5
+      ],
+      "final_answer": 6,
+      "is_correct": false,
+      "response_time_seconds": 1.74,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:06:56.457382",
+      "target_number": 1,
+      "detected_hands": [
+        1
+      ],
+      "final_answer": 1,
+      "is_correct": true,
+      "response_time_seconds": 6.63,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:07:53.651675",
+      "target_number": 8,
+      "detected_hands": [
+        4
+      ],
+      "final_answer": 4,
+      "is_correct": false,
+      "response_time_seconds": 39.19,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:08:18.403407",
+      "target_number": 8,
+      "detected_hands": [
+        2,
+        5
+      ],
+      "final_answer": 7,
+      "is_correct": false,
+      "response_time_seconds": 6.74,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:08:44.019842",
+      "target_number": 8,
+      "detected_hands": [
+        5,
+        5
+      ],
+      "final_answer": 10,
+      "is_correct": false,
+      "response_time_seconds": 7.6,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:09:30.948142",
+      "target_number": 4,
+      "detected_hands": [
+        0
+      ],
+      "final_answer": 0,
+      "is_correct": false,
+      "response_time_seconds": 28.92,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:09:58.700637",
+      "target_number": 0,
+      "detected_hands": [
+        5
+      ],
+      "final_answer": 5,
+      "is_correct": false,
+      "response_time_seconds": 9.74,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:10:20.183488",
+      "target_number": 3,
+      "detected_hands": [
+        3
+      ],
+      "final_answer": 3,
+      "is_correct": true,
+      "response_time_seconds": 3.47,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:11:13.049235",
+      "target_number": 3,
+      "detected_hands": [
+        2,
+        2
+      ],
+      "final_answer": 4,
+      "is_correct": false,
+      "response_time_seconds": 34.85,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:11:34.196964",
+      "target_number": 8,
+      "detected_hands": [
+        1,
+        8
+      ],
+      "final_answer": 9,
+      "is_correct": false,
+      "response_time_seconds": 3.14,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:12:02.614007",
+      "target_number": 7,
+      "detected_hands": [
+        2,
+        5
+      ],
+      "final_answer": 7,
+      "is_correct": true,
+      "response_time_seconds": 10.41,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:12:23.299978",
+      "target_number": 1,
+      "detected_hands": [
+        1
+      ],
+      "final_answer": 1,
+      "is_correct": true,
+      "response_time_seconds": 2.67,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:13:14.198263",
+      "target_number": 3,
+      "detected_hands": [
+        3
+      ],
+      "final_answer": 3,
+      "is_correct": true,
+      "response_time_seconds": 32.89,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:14:22.234560",
+      "target_number": 5,
+      "detected_hands": [
+        5
+      ],
+      "final_answer": 5,
+      "is_correct": true,
+      "response_time_seconds": 50.0,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:14:45.386807",
+      "target_number": 8,
+      "detected_hands": [
+        4
+      ],
+      "final_answer": 4,
+      "is_correct": false,
+      "response_time_seconds": 5.14,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:15:22.376235",
+      "target_number": 8,
+      "detected_hands": [
+        4,
+        4
+      ],
+      "final_answer": 8,
+      "is_correct": true,
+      "response_time_seconds": 18.98,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:15:52.695116",
+      "target_number": 9,
+      "detected_hands": [
+        5,
+        5
+      ],
+      "final_answer": 10,
+      "is_correct": false,
+      "response_time_seconds": 12.31,
+      "hand_count": 2,
+      "is_dual_hand": true
+    },
+    {
+      "timestamp": "2025-06-12T19:16:22.677457",
+      "target_number": 6,
+      "detected_hands": [
+        6
+      ],
+      "final_answer": 6,
+      "is_correct": true,
+      "response_time_seconds": 11.97,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:16:53.964955",
+      "target_number": 0,
+      "detected_hands": [
+        0
+      ],
+      "final_answer": 0,
+      "is_correct": true,
+      "response_time_seconds": 13.27,
+      "hand_count": 1,
+      "is_dual_hand": false
+    },
+    {
+      "timestamp": "2025-06-12T19:17:23.444349",
+      "target_number": 6,
+      "detected_hands": [
+        0
+      ],
+      "final_answer": 0,
+      "is_correct": false,
+      "response_time_seconds": 11.47,
+      "hand_count": 1,
+      "is_dual_hand": false
+    }
+  ],
+  "session_summary": {
+    "total_questions": 39,
+    "correct_answers": 22,
+    "wrong_answers": 17,
+    "accuracy_rate": 56.41
+  }
+}
