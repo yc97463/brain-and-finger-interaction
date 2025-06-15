@@ -1,0 +1,230 @@
+name: Deploy Game Statistics to GitHub Pages
+
+on:
+  push:
+    branches: [ main, master ]
+    paths: 
+      - 'game_logs/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Build static pages
+      run: |
+        # 建立輸出目錄
+        mkdir -p dist
+        
+        # 建立主頁面 HTML
+        cat > dist/index.html << 'HTML_EOF'
+        <!DOCTYPE html>
+        <html lang="zh-TW">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>腦手互動遊戲統計</title>
+            <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+            <style>
+                * { margin: 0; padding: 0; box-sizing: border-box; }
+                body {
+                    font-family: 'Noto Sans TC', 'Microsoft JhengHei', Arial, sans-serif;
+                    background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+                    min-height: 100vh; padding: 20px; color: white; position: relative; overflow-x: hidden;
+                }
+                body::before {
+                    content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background-image: 
+                        radial-gradient(2px 2px at 20px 30px, rgba(255,255,255,0.3), transparent),
+                        radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.2), transparent),
+                        radial-gradient(1px 1px at 90px 40px, rgba(255,255,255,0.4), transparent);
+                    background-repeat: repeat; background-size: 200px 100px;
+                    animation: twinkle 4s ease-in-out infinite alternate; z-index: -2;
+                }
+                body::after {
+                    content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: 
+                        radial-gradient(ellipse at top, rgba(79, 172, 254, 0.08) 0%, transparent 50%),
+                        radial-gradient(ellipse at bottom, rgba(0, 242, 254, 0.05) 0%, transparent 50%);
+                    animation: aurora 20s ease-in-out infinite; z-index: -1;
+                }
+                @keyframes twinkle { 0% { opacity: 0.3; } 100% { opacity: 1; } }
+                @keyframes aurora { 0%, 100% { transform: scale(1) translateY(0); opacity: 0.7; } 50% { transform: scale(1.1) translateY(-10px); opacity: 0.9; } }
+                .container { max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+                .header { text-align: center; margin-bottom: 40px; animation: slideDown 1s ease-out; }
+                .header h1 {
+                    font-size: 3rem; font-weight: 700; margin-bottom: 10px;
+                    background: linear-gradient(45deg, #fff, #e0e7ff);
+                    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+                    text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                }
+                .header p { color: rgba(255,255,255,0.8); font-size: 1.2rem; font-weight: 300; }
+                .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 25px; }
+                .stat-card {
+                    background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+                    border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; padding: 30px;
+                    transition: all 0.3s ease; text-decoration: none; color: inherit; position: relative; overflow: hidden;
+                    animation: slideUp 0.8s ease-out; animation-fill-mode: both;
+                }
+                .stat-card::before {
+                    content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent); transition: left 0.5s;
+                }
+                .stat-card:hover::before { left: 100%; }
+                .stat-card:hover {
+                    transform: translateY(-5px);
+                    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+                }
+                .stat-card h2 { font-size: 1.3rem; margin-bottom: 15px; color: white; font-weight: 500; }
+                .stat-card p { color: rgba(255,255,255,0.9); line-height: 1.6; margin-bottom: 8px; font-size: 0.95rem; }
+                .date {
+                    font-size: 2rem; font-weight: 700; text-align: center; margin: 15px 0;
+                    background: linear-gradient(45deg, #4facfe, #00f2fe);
+                    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+                    animation: pulse 2s ease-in-out infinite;
+                }
+                @keyframes slideDown { from { opacity: 0; transform: translateY(-50px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes slideUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
+                @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+                .empty-state { text-align: center; padding: 60px 20px; color: rgba(255,255,255,0.6); }
+                .empty-state h2 { font-size: 1.5rem; margin-bottom: 10px; }
+                @media (max-width: 768px) {
+                    .header h1 { font-size: 2rem; }
+                    .stats-grid { grid-template-columns: 1fr; gap: 20px; }
+                    .stat-card { padding: 20px; }
+                    .date { font-size: 1.5rem; }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <div class="header">
+                    <h1>腦手互動遊戲統計</h1>
+                    <p>手勢識別遊戲分析報告</p>
+                </div>
+                <div class="stats-grid" id="statsGrid">
+                    <!-- 統計卡片將在這裡動態生成 -->
+                </div>
+            </div>
+            <script>
+                async function loadGameStats() {
+                    try {
+                        const response = await fetch('./stats.json');
+                        const gameStats = await response.json();
+                        const statsGrid = document.getElementById('statsGrid');
+                        
+                        if (gameStats.length === 0) {
+                            statsGrid.innerHTML = '<div class="empty-state"><h2>📊 暫無遊戲記錄</h2><p>請先進行遊戲並生成統計資料</p></div>';
+                            return;
+                        }
+                        
+                        gameStats.forEach((stat, index) => {
+                            const card = document.createElement('a');
+                            card.className = 'stat-card';
+                            card.href = stat.url;
+                            card.style.animationDelay = (index * 0.1) + 's';
+                            card.innerHTML = '<h2>📊 ' + stat.title + '</h2><div class="date">' + stat.date + '</div><p>🎯 正確率: ' + stat.accuracy + '%</p><p>⚡ 平均反應時間: ' + stat.avgTime + '秒</p><p>🎮 總題數: ' + stat.totalQuestions + '題</p><p>📅 遊戲時間: ' + stat.duration + '</p>';
+                            statsGrid.appendChild(card);
+                        });
+                    } catch (error) {
+                        console.error('載入統計資料失敗:', error);
+                        document.getElementById('statsGrid').innerHTML = '<div class="empty-state"><h2>❌ 載入失敗</h2><p>無法載入遊戲統計資料</p></div>';
+                    }
+                }
+                document.addEventListener('DOMContentLoaded', loadGameStats);
+            </script>
+        </body>
+        </html>
+        HTML_EOF
+        
+        # 初始化統計資料 JSON
+        echo "[" > dist/stats.json
+        first_item=true
+        
+        # 處理每個遊戲記錄資料夾
+        echo "開始處理遊戲記錄資料夾..."
+        
+        for folder in game_logs/*/; do
+          if [ -d "$folder" ]; then
+            folder_name=$(basename "$folder")
+            echo "處理資料夾: $folder_name"
+            
+            # 提取日期 (假設格式為 YYYYMMDD 開頭)
+            date_part=$(echo "$folder_name" | grep -o '^[0-9]\{8\}')
+            
+            if [ -n "$date_part" ]; then
+              # 格式化日期顯示
+              formatted_date="${date_part:0:4}-${date_part:4:2}-${date_part:6:2}"
+              
+              # 建立對應的目錄
+              mkdir -p "dist/$date_part"
+              
+              # 複製統計頁面和資料檔案
+              if [ -f "$folder/statistics.html" ]; then
+                cp "$folder/statistics.html" "dist/$date_part/index.html"
+                echo "✅ 複製統計頁面: $folder_name -> /$date_part/"
+                
+                # 複製 JSON 資料檔案
+                for json_file in "$folder"/*.json; do
+                  if [ -f "$json_file" ]; then
+                    cp "$json_file" "dist/$date_part/"
+                    echo "✅ 複製資料檔案: $(basename "$json_file")"
+                  fi
+                done
+                
+                # 添加到統計資料
+                if [ "$first_item" = true ]; then
+                  first_item=false
+                else
+                  echo "," >> dist/stats.json
+                fi
+                
+                # 生成統計資料項目
+                echo "  {" >> dist/stats.json
+                echo "    \"title\": \"$folder_name\"," >> dist/stats.json
+                echo "    \"date\": \"$formatted_date\"," >> dist/stats.json
+                echo "    \"url\": \"./$date_part/\"," >> dist/stats.json
+                echo "    \"accuracy\": \"載入中\"," >> dist/stats.json
+                echo "    \"avgTime\": \"載入中\"," >> dist/stats.json
+                echo "    \"totalQuestions\": \"載入中\"," >> dist/stats.json
+                echo "    \"duration\": \"載入中\"" >> dist/stats.json
+                echo "  }" >> dist/stats.json
+              else
+                echo "⚠️  找不到 statistics.html: $folder_name"
+              fi
+            else
+              echo "⚠️  無法提取日期: $folder_name (格式應為 YYYYMMDD 開頭)"
+            fi
+          fi
+        done
+        
+        echo "]" >> dist/stats.json
+        
+        echo "🎉 構建完成！"
+        echo "📁 生成的目錄結構:"
+        find dist -type f | sort
+        
+    - name: Setup Pages
+      uses: actions/configure-pages@v4
+      
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: './dist'
+        
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4 
