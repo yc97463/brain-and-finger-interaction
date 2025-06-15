@@ -224,6 +224,9 @@ $RECYCLE.BIN/
 # Data files
 *.csv
 *.json
+!game_logs/
+!game_logs/**/
+!game_logs/**/*.json
 *.xml
 *.yaml
 *.yml
