@@ -5,6 +5,9 @@ import random
 import time
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
+import json
+import os
+from datetime import datetime
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -13,6 +16,10 @@ mp_hands = mp.solutions.hands
 # 全域設定變數
 MIN_NUMBER = 0   # 測驗數字最小值
 MAX_NUMBER = 9  # 測驗數字最大值（考慮雙手相加，建議設定為10以內，例如5+5=10）
+
+# Log 紀錄設定
+LOG_DIR = "game_logs"  # Log 檔案目錄
+LOG_FILENAME = None    # 將在 main() 中設定
 
 # 全域字體快取
 _font_cache = {}
@@ -161,7 +168,126 @@ def hand_pos(finger_angle):
     else:
         return ''
 
+# Log 紀錄相關函數
+def init_log_system():
+    """初始化 log 系統"""
+    global LOG_FILENAME
+    
+    # 建立 log 目錄
+    if not os.path.exists(LOG_DIR):
+        os.makedirs(LOG_DIR)
+        print(f"📁 建立 log 目錄: {LOG_DIR}")
+    
+    # 建立以時間戳記命名的 log 檔案
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    LOG_FILENAME = os.path.join(LOG_DIR, f"hand_gesture_game_{timestamp}.json")
+    
+    # 初始化 log 檔案
+    initial_data = {
+        "session_info": {
+            "start_time": datetime.now().isoformat(),
+            "min_number": MIN_NUMBER,
+            "max_number": MAX_NUMBER,
+            "version": "雙手相加版"
+        },
+        "game_records": [],
+        "session_summary": {
+            "total_questions": 0,
+            "correct_answers": 0,
+            "wrong_answers": 0,
+            "accuracy_rate": 0.0
+        }
+    }
+    
+    with open(LOG_FILENAME, 'w', encoding='utf-8') as f:
+        json.dump(initial_data, f, ensure_ascii=False, indent=2)
+    
+    print(f"📝 Log 檔案建立: {LOG_FILENAME}")
+
+def log_game_record(target_number, detected_hands, final_answer, is_correct, response_time):
+    """記錄遊戲結果"""
+    global LOG_FILENAME
+    
+    if LOG_FILENAME is None:
+        return
+    
+    try:
+        # 讀取現有資料
+        with open(LOG_FILENAME, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        # 建立新記錄
+        record = {
+            "timestamp": datetime.now().isoformat(),
+            "target_number": target_number,
+            "detected_hands": detected_hands,  # 各隻手偵測到的數字列表
+            "final_answer": final_answer,      # 最終答案（單手或相加結果）
+            "is_correct": is_correct,
+            "response_time_seconds": round(response_time, 2),
+            "hand_count": len(detected_hands),
+            "is_dual_hand": len(detected_hands) > 1
+        }
+        
+        # 加入記錄
+        data["game_records"].append(record)
+        
+        # 更新統計
+        data["session_summary"]["total_questions"] += 1
+        if is_correct:
+            data["session_summary"]["correct_answers"] += 1
+        else:
+            data["session_summary"]["wrong_answers"] += 1
+        
+        # 計算答對率
+        total = data["session_summary"]["total_questions"]
+        correct = data["session_summary"]["correct_answers"]
+        data["session_summary"]["accuracy_rate"] = round((correct / total) * 100, 2) if total > 0 else 0.0
+        
+        # 寫回檔案
+        with open(LOG_FILENAME, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        # 在控制台顯示記錄
+        status = "✅ 答對" if is_correct else "❌ 答錯"
+        hands_info = f"單手({detected_hands[0]})" if len(detected_hands) == 1 else f"雙手({'+'.join(map(str, detected_hands))}={final_answer})"
+        print(f"📊 {status} | 目標:{target_number} | {hands_info} | 用時:{response_time:.1f}秒 | 答對率:{data['session_summary']['accuracy_rate']:.1f}%")
+        
+    except Exception as e:
+        print(f"❌ Log 記錄失敗: {e}")
+
+def finalize_log_system():
+    """結束 log 系統，加入結束時間"""
+    global LOG_FILENAME
+    
+    if LOG_FILENAME is None:
+        return
+    
+    try:
+        with open(LOG_FILENAME, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        
+        data["session_info"]["end_time"] = datetime.now().isoformat()
+        
+        with open(LOG_FILENAME, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+        
+        # 顯示最終統計
+        summary = data["session_summary"]
+        print(f"\n📈 遊戲結束統計:")
+        print(f"   總題數: {summary['total_questions']}")
+        print(f"   答對: {summary['correct_answers']}")
+        print(f"   答錯: {summary['wrong_answers']}")
+        print(f"   答對率: {summary['accuracy_rate']:.1f}%")
+        print(f"   Log 檔案: {LOG_FILENAME}")
+        
+    except Exception as e:
+        print(f"❌ Log 結束處理失敗: {e}")
+
 def main():
+    # 初始化 log 系統
+    print("📝 初始化 log 系統...")
+    init_log_system()
+    
     # 首先嘗試列出可用的攝影機
     print("🔍 正在檢測可用的攝影機...")
     
@@ -263,6 +389,10 @@ def main():
     game_state = "WAITING"  # States: WAITING, RECOGNIZING, SHOWING_RESULT
     state_start_time = time.time()
     countdown_value = PREPARATION_DELAY
+    
+    # Log 相關變數
+    question_start_time = None  # 記錄開始答題的時間
+    current_detected_hands = []  # 記錄當前偵測到的手勢數字
 
     print("🤖 初始化 MediaPipe...")
     try:
@@ -312,6 +442,7 @@ def main():
                         state_start_time = current_time
                         stable_frames = 0
                         last_detected_number = None
+                        question_start_time = current_time  # 記錄開始答題時間
                 
                 # State: RECOGNIZING
                 elif game_state == "RECOGNIZING":
@@ -379,6 +510,9 @@ def main():
                                 # 單隻手：直接使用該數字
                                 current_number = detected_numbers[0] if detected_numbers else None
                             
+                            # 更新當前偵測到的手勢數字（用於 log）
+                            current_detected_hands = detected_numbers.copy()
+                            
                             # Check if the number is stable
                             if current_number == last_detected_number:
                                 stable_frames += 1
@@ -393,7 +527,8 @@ def main():
                                 state_start_time = current_time
                                 
                                 # 檢查答案：比較目標數字與當前數字（可能是單手或雙手相加的結果）
-                                if current_number == target_number:
+                                is_correct = current_number == target_number
+                                if is_correct:
                                     answer_confirmed = True
                                     wrong_answer_confirmed = False
                                     correct_count += 1
@@ -402,10 +537,16 @@ def main():
                                 else:
                                     answer_confirmed = False
                                     wrong_answer_confirmed = True
+                                
+                                # 記錄答題結果到 log
+                                if question_start_time is not None:
+                                    response_time = current_time - question_start_time
+                                    log_game_record(target_number, current_detected_hands, current_number, is_correct, response_time)
                     else:
                         # 沒有偵測到手勢時重置穩定幀數
                         stable_frames = 0
                         last_detected_number = None
+                        current_detected_hands = []  # 清空偵測到的手勢記錄
                         img = put_chinese_text(img, "請將手放在鏡頭前", (30, 230), 35, (255, 255, 0))
                 
                 # State: SHOWING_RESULT
@@ -442,6 +583,7 @@ def main():
                         last_detected_number = None
                         answer_confirmed = False
                         wrong_answer_confirmed = False
+                        current_detected_hands = []  # 重置手勢記錄
 
                 cv2.imshow('Hand Gesture Game - 發展延遲孩童版', img)
                 key = cv2.waitKey(5)
@@ -458,6 +600,7 @@ def main():
                     last_detected_number = None
                     game_state = "WAITING"
                     state_start_time = time.time()
+                    current_detected_hands = []  # 重置手勢記錄
 
     except Exception as e:
         print(f"❌ MediaPipe 初始化失敗: {e}")
@@ -466,6 +609,7 @@ def main():
         if cap:
             cap.release()
         cv2.destroyAllWindows()
+        finalize_log_system()  # 結束 log 系統
         print("✅ 程式結束")
 
 if __name__ == '__main__':
