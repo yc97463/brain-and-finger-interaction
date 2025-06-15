@@ -230,6 +230,7 @@ $RECYCLE.BIN/
 *.xml
 *.yaml
 *.yml
+!.github/workflows/*.yml
 data/
 datasets/
 models/
